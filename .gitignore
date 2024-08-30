@@ -1,0 +1,1 @@
+*.class\n*.jar\n*.parquet\n/target/
