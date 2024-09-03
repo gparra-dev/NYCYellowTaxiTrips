@@ -33,7 +33,7 @@ It leverages Apache Parquet and Apache Arrow to process the files.
 3. As an example I will use the file `yellow_tripdata_2024-06.parquet`
 4. The app will print it's results on screen, so you'll want to output the results to a file.
 	* in windows git bash or in linux you can use the operator `>`
-	* for like this echo "
+	* for like this: `echo "Hello World" > helloworld.txt` 
 5. I typically run the app from the NYCYellowTaxiTrips folder with the following command:
 	* `java -cp target/nyctaxitrip-reader-1.0-SNAPSHOT.jar com.example.App ../yellow_tripdata_2024-06.parquet > ../output.txt`
 	* or in generic form:
