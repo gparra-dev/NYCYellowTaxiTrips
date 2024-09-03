@@ -60,15 +60,15 @@ It leverages Apache Parquet and Apache Arrow to process the files.
 2. Could have used Apache Spark to do distributed computing
 	* This would leverage parallelization
 	* And would lower the memory requirements
-3. Could a streaming percentile calculation
+3. Could use a streaming percentile calculation
 	* avoid loading all distances in memory to calculate
 
 ## What's next?
 1. In all honesty, this was built after a long time not building an app from scratch
 2. It's raw but it accomplishes it's goal effectively
 3. I tried 1 and 2 above but:
-	* I'm going to need to dig deeper into dependencies and parallelization in Java
+	* I'm going to need to dig deeper into dependencies and parallelization in Java.  
 	* For that I'd need a bit more time than the few hours I've put into this so far.
-	* It's possible, but this is the first task, will focus on more improvements if necessary.
+	* Happy to do it, but this is the first version. Will focus on more improvements if necessary, hopefully with a little help.
 
 
