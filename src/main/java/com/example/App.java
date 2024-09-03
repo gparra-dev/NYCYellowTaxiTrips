@@ -36,9 +36,6 @@ public class App
                 }
             }
 
-            // Sort the distances for an accurate percentile calculation
-            Collections.sort(distances);
-
             // Convert the sorted list to an array
             double[] distanceArray = distances.stream().mapToDouble(Double::doubleValue).toArray();
 
