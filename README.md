@@ -42,7 +42,7 @@ It leverages Apache Parquet and Apache Arrow to process the files.
 	* Should take a minute or less or more depending on your system	to process the large file.
 7. The output file looks like this:
 	* First row: `90th Percentile Distance: 8.73`
-	* all other rows: <EACH TRIP AS A ONE LINE JSON OBJECT>
+	* all other rows: "EACH TRIP AS A ONE LINE JSON OBJECT"
 
 ## Potential Issues and Performance Considerations
 1. This is a fairly basic app:
