@@ -8,7 +8,7 @@
   <name>nyctaxitrip-reader</name>
   <url>http://maven.apache.org</url>
   <dependencies>
-    <dependency>
+<dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
@@ -29,16 +29,6 @@
         <artifactId>hadoop-client</artifactId>
         <version>3.3.1</version>
     </dependency>
-    <dependency>
-        <groupId>org.apache.arrow</groupId>
-        <artifactId>arrow-vector</artifactId>
-        <version>17.0.0</version>
-	</dependency>
-	<dependency>
-    <groupId>org.apache.commons</groupId>
-    <artifactId>commons-math3</artifactId>
-    <version>3.6.1</version>
-	</dependency>
   </dependencies>
  <build>
     <plugins>

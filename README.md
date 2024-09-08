@@ -1,6 +1,9 @@
-# NYCYellowTaxiTrips
+# NYCYellowTaxiTrips V2
 
-Hello! This is a very basic app which receives the path to a NYC Yellow Trips Parquet file
+New in V2! Streaming percentile calculation.
+See more in the section "Potential Issues and Performance Considerations" of the readme.
+
+Hello! This is an app which receives the path to a NYC Yellow Trips Parquet file
 as an argument, and then processes the file to look for all trips within the highest 90th percentile
 based on the trip_distance.
 
@@ -33,7 +36,7 @@ It leverages Apache Parquet and Apache Arrow to process the files.
 3. As an example I will use the file `yellow_tripdata_2024-06.parquet`
 4. The app will print it's results on screen, so you'll want to output the results to a file.
 	* in windows git bash or in linux you can use the operator `>`
-	* for like this echo "
+	* like this for example: `echo "Hello World" > helloworld.txt` 
 5. I typically run the app from the NYCYellowTaxiTrips folder with the following command:
 	* `java -cp target/nyctaxitrip-reader-1.0-SNAPSHOT.jar com.example.App ../yellow_tripdata_2024-06.parquet > ../output.txt`
 	* or in generic form:
@@ -42,33 +45,38 @@ It leverages Apache Parquet and Apache Arrow to process the files.
 	* Should take a minute or less or more depending on your system	to process the large file.
 7. The output file looks like this:
 	* First row: `90th Percentile Distance: 8.73`
-	* all other rows: <EACH TRIP AS A ONE LINE JSON OBJECT>
+	* all other rows: "EACH TRIP AS A ONE LINE JSON OBJECT"
 
 ## Potential Issues and Performance Considerations
-1. This is a fairly basic app:
-	* Loads all distances in memory to calculate the 90th percentile
-	* Fortunately the Parquet format makes that not too heavy on the memory for these files.
-	* No parallelization, it reads all distances sequentially and prints the filtered records sequentially
+1. V2 has made some improvements:
+	* Instead of loading all distances in memory, we now obtain the total number of trips from the files metadata
+	* Then we calculate the approximate number of trips that would be in the 90th percentile (i.e. totalTrips*0.1)
+	* Then we create a minHeap of trip distances and load the approximate number of trips we expect to fit
+	* Once we've loaded the expected number of trip distances, we keep reading the trip distances
+	* And we replace the first item in the heap (with any distance bigger than it)
+	* So we are only loading a 10th of the distances into memory
+	* And when we are done the firs item in the minHeap is our threshold to filter trips by
+	* Still, No parallelization, it reads distances sequentially and prints the filtered records sequentially
 2. If you have a system with very low resources and low memory, this program may not be able to run
 	* The entire app with the source code and compiled files is ~141MB in size.
-	* Based on my rough estimates you may need ~1GB to 1.3GB of memory to process a file
+	* Based on my rough estimates you now need about half the memory we needed before to run
+	* That's approximately ~500MB to 800MB of memory to process a file
 
 ## How could this app be improved to tackle those issues
 1. Introducing parallelization could improve speed and reduce peak memory consumption
-	* Could chunk the file in pieces and load the distances
-	* Could chunk the file in chunks and filter each trip based on percentile through many chunks in parallel
+	* Could chunk the file in pieces and load the distances into a heap in parallel threads
+	* Could chunk the file in pieces and filter each trip based on percentile through many chunks in parallel threads
 2. Could have used Apache Spark to do distributed computing
 	* This would leverage parallelization
 	* And would lower the memory requirements
-3. Could a streaming percentile calculation
-	* avoid loading all distances in memory to calculate
 
 ## What's next?
 1. In all honesty, this was built after a long time not building an app from scratch
 2. It's raw but it accomplishes it's goal effectively
 3. I tried 1 and 2 above but:
 	* I'm going to need to dig deeper into dependencies and parallelization in Java
-	* For that I'd need a bit more time than the few hours I've put into this so far.
-	* It's possible, but this is the first task, will focus on more improvements if necessary.
+	* For that I still need a bit more time than the few hours I've put into this so far.
+	* Happy to do it, but this is the 2nd version. Will focus on more improvements in a v3 if necessary.
+	* Hopefully with a little help :).
 
 
