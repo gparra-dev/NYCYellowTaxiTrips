@@ -43,7 +43,9 @@ It leverages Apache Parquet and Apache Arrow to process the files.
 	* `java -cp <PATHTOJAR>/nyctaxitrip-reader-1.0-SNAPSHOT.jar com.example.App <PATHTOParquetFile>/<parquetfilename> > <PATHTOOUTPUTFILE>/<outputfilename>`
 6. The app should run in your local machine or server you are running it on.
 	* Should take a minute or less or more depending on your system	to process the large file.
-7. The output file looks like this:
+7. The output file in v2 looks like this:
+	* First row: `Total number of trips in the Parquet file: 3539193
+	* Second row: `Approximate number of trips in the 90th percentile: 353919
 	* First row: `90th Percentile Distance: 8.73`
 	* all other rows: "EACH TRIP AS A ONE LINE JSON OBJECT"
 
@@ -60,7 +62,7 @@ It leverages Apache Parquet and Apache Arrow to process the files.
 2. If you have a system with very low resources and low memory, this program may not be able to run
 	* The entire app with the source code and compiled files is ~141MB in size.
 	* Based on my rough estimates you now need about half the memory we needed before to run
-	* That's approximately ~500MB to 800MB of memory to process a file
+	* That's approximately ~500MB to ~800MB of memory to process a file
 
 ## How could this app be improved to tackle those issues
 1. Introducing parallelization could improve speed and reduce peak memory consumption
