@@ -44,8 +44,8 @@ It leverages Apache Parquet and Apache Arrow to process the files.
 6. The app should run in your local machine or server you are running it on.
 	* Should take a minute or less or more depending on your system	to process the large file.
 7. The output file in v2 looks like this:
-	* First row: `Total number of trips in the Parquet file: 3539193
-	* Second row: `Approximate number of trips in the 90th percentile: 353919
+	* First row: `Total number of trips in the Parquet file: 3539193`
+	* Second row: `Approximate number of trips in the 90th percentile: 353919`
 	* First row: `90th Percentile Distance: 8.73`
 	* all other rows: "EACH TRIP AS A ONE LINE JSON OBJECT"
 
