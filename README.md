@@ -57,7 +57,7 @@ It leverages Apache Parquet and Apache Arrow to process the files.
 	* So when reading the distances to calculate the percentile, now I only deserialize the trip_distance fields
 	* When reading the file to filter only the trips in the 90th percentile I took the liberty to only get 3 fields
 	* VendorID, trip pickup date, trip distance. Which changes the output of the file significantly
-	* With these changes the system takes now about 1/6th of the time it took to process a file (<20 seconds)
+	* With these changes the system takes now about 1/4th of the time it took to process a file (<20 seconds)
 2. V2 has made some improvements:
 	* Instead of loading all distances in memory, we now obtain the total number of trips from the files metadata
 	* Then we calculate the approximate number of trips that would be in the 90th percentile (i.e. totalTrips*0.1)
