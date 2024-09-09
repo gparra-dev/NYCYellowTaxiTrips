@@ -1,10 +1,14 @@
 package com.example;
 
+import org.apache.avro.Schema;
+import org.apache.avro.SchemaBuilder;
 import org.apache.parquet.avro.AvroParquetReader;
 import org.apache.parquet.hadoop.ParquetReader;
+import org.apache.parquet.avro.AvroReadSupport;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.LogicalTypes;
 
 import org.apache.parquet.hadoop.ParquetFileReader;
 import org.apache.parquet.hadoop.metadata.ParquetMetadata;
@@ -28,6 +32,11 @@ public class App
         Path path = new Path(filePath);
 		
 		ParquetFileReader fileReader = null;
+		
+		Schema tripSchema = SchemaBuilder.record("TripDistance")
+			.fields()
+			.optionalDouble("trip_distance")
+			.endRecord();
 		
 		//Get file metadata
 		try{
@@ -53,9 +62,12 @@ public class App
 			//Create a minHeap to store the 90th percentile distances
 			PriorityQueue<Double> minHeap = new PriorityQueue<>();
 			
+			//Configure to only read trip_distance
+			configuration.set(AvroReadSupport.AVRO_REQUESTED_PROJECTION, tripSchema.toString());
+
 			//Create a reader for the parquet file of trips
-			ParquetReader<GenericRecord> reader = AvroParquetReader.<GenericRecord>builder(path).withConf(new Configuration()).build();
-			
+			ParquetReader<GenericRecord> reader = AvroParquetReader.<GenericRecord>builder(path).withConf(configuration).build();			
+
 			//Create a record to read the trips into
 			GenericRecord trip;
 			
@@ -89,8 +101,19 @@ public class App
 			//Save it to a double
 			double threshold = minHeap.peek();
 			
+			tripSchema = SchemaBuilder.record("BriefTrip")
+				.fields()
+				.optionalInt("VendorID")
+				.name("tpep_pickup_datetime")
+                .type().unionOf().nullType().and().type(LogicalTypes.timestampMicros().addToSchema(Schema.create(Schema.Type.LONG))).endUnion().nullDefault()
+				.optionalDouble("trip_distance")
+				.endRecord();			
+
+			//Configure to only read VendorID, tpep_pickup_datetime, and trip_distance
+			configuration.set(AvroReadSupport.AVRO_REQUESTED_PROJECTION, tripSchema.toString());
+			
 			// Filter and print trips with distance in the 90th percentile
-            try (ParquetReader<GenericRecord> filterTrips = AvroParquetReader.<GenericRecord>builder(path).withConf(new Configuration()).build()) {
+            try (ParquetReader<GenericRecord> filterTrips = AvroParquetReader.<GenericRecord>builder(path).withConf(configuration).build()) {
                 while ((trip = filterTrips.read()) != null) {
                     Double tripDistance = (Double) trip.get("trip_distance");
                     if (tripDistance != null && tripDistance >= threshold) {

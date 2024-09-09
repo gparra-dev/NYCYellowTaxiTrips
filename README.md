@@ -1,6 +1,6 @@
-# NYCYellowTaxiTrips V2
+# NYCYellowTaxiTrips V3
 
-New in V2! Streaming percentile calculation.
+New in V3! Using a projection of the schema to deserialize the file
 See more in the section "Potential Issues and Performance Considerations" of the readme.
 
 Hello! This is an app which receives the path to a NYC Yellow Trips Parquet file
@@ -47,10 +47,18 @@ It leverages Apache Parquet and Apache Arrow to process the files.
 	* First row: `Total number of trips in the Parquet file: 3539193`
 	* Second row: `Approximate number of trips in the 90th percentile: 353919`
 	* First row: `90th Percentile Distance: 8.73`
-	* all other rows: "EACH TRIP AS A ONE LINE JSON OBJECT"
+	* all other rows: `{"VendorID": 1, "tpep_pickup_datetime": 1717200226000000, "trip_distance": 12.5}`
 
 ## Potential Issues and Performance Considerations
-1. V2 has made some improvements:
+
+1. V3 has made further improvements to speed
+	* Before the reader of the file was deserializing all of the fields on each row
+	* By defining the schema of what i want to read I can leverage the benefits of the parquet format
+	* So when reading the distances to calculate the percentile, now I only deserialize the trip_distance fields
+	* When reading the file to filter only the trips in the 90th percentile I took the liberty to only get 3 fields
+	* VendorID, trip pickup date, trip distance. Which changes the output of the file significantly
+	* With these changes the system takes now about 1/6th of the time it took to process a file (<20 seconds)
+2. V2 has made some improvements:
 	* Instead of loading all distances in memory, we now obtain the total number of trips from the files metadata
 	* Then we calculate the approximate number of trips that would be in the 90th percentile (i.e. totalTrips*0.1)
 	* Then we create a minHeap of trip distances and load the approximate number of trips we expect to fit
@@ -59,7 +67,7 @@ It leverages Apache Parquet and Apache Arrow to process the files.
 	* So we are only loading a 10th of the distances into memory
 	* And when we are done the firs item in the minHeap is our threshold to filter trips by
 	* Still, No parallelization, it reads distances sequentially and prints the filtered records sequentially
-2. If you have a system with very low resources and low memory, this program may not be able to run
+3. If you have a system with very low resources and low memory, this program may not be able to run
 	* The entire app with the source code and compiled files is ~141MB in size.
 	* Based on my rough estimates you now need about half the memory we needed before to run
 	* That's approximately ~500MB to ~800MB of memory to process a file
@@ -78,7 +86,7 @@ It leverages Apache Parquet and Apache Arrow to process the files.
 3. I tried 1 and 2 above but:
 	* I'm going to need to dig deeper into dependencies and parallelization in Java
 	* For that I still need a bit more time than the few hours I've put into this so far.
-	* Happy to do it, but this is the 2nd version. Will focus on more improvements in a v3 if necessary.
+	* Happy to do it, but this is the 3rd version. Will focus on more improvements in a v4 if necessary.
 	* Hopefully with a little help :).
 
 
